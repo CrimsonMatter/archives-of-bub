@@ -1,0 +1,174 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { LIBRARY_ORDER } from "../../config/libraryOrder";
+
+/* Load all volumes */
+const volumes = await getCollection("library");
+
+/* Stable disorder ordering */
+const ordered = [];
+const unordered = [];
+
+/* First: explicitly ordered holdings */
+for (const slug of LIBRARY_ORDER) {
+  const match = volumes.find((v) => v.slug === slug);
+  if (match) ordered.push(match);
+}
+
+/* Then: anything not yet classified */
+for (const v of volumes) {
+  if (!LIBRARY_ORDER.includes(v.slug)) {
+    unordered.push(v);
+  }
+}
+
+/* Final render list */
+const allVolumes = [...ordered, ...unordered];
+---
+
+<Layout
+  title="Library — The Archives of Bub"
+  description="Volumes attributed to Bub, arranged by their own preferences."
+  canonicalPath="/library"
+>
+  <header class="head">
+    <h1>Library</h1>
+    <p class="lede">
+      Volumes may be consulted. Agreement is expected.
+    </p>
+  </header>
+
+  <section class="shelf" aria-label="Holdings">
+    <ol class="cards">
+      {allVolumes.map((v) => (
+        <li class="card">
+          <a class="card__link" href={`/library/${v.slug}/`}>
+            <div class="card__top">
+              <span class="card__title">{v.data.title}</span>
+
+              {v.data.volume ? (
+                <span class="card__sig">{v.data.volume}</span>
+              ) : null}
+            </div>
+
+            {v.data.subtitle ? (
+              <div class="card__desc">
+                {v.data.subtitle}
+              </div>
+            ) : null}
+
+
+            {v.data.filed_under ? (
+              <div class="card__meta">
+                Filed under: {v.data.filed_under}
+              </div>
+            ) : null}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {unordered.length > 0 ? (
+    <section class="unsorted">
+      <hr class="divider" />
+      <p class="unsorted-label">Unsorted holdings.</p>
+    </section>
+  ) : null}
+</Layout>
+
+<style>
+  .head { margin-bottom: 1.25rem; }
+  .lede {
+    color: rgba(220,214,198,0.75);
+    max-width: 60ch;
+  }
+
+  .cards {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .card__link {
+    display: block;
+    text-decoration: none;
+    color: rgba(220,214,198,0.88);
+    border: 1px solid rgba(176,141,85,0.25);
+    border-radius: 12px;
+    padding: 1rem;
+    background: rgba(15,14,13,0.28);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+    opacity: 0;
+    animation: settle 1.35s ease-out forwards;
+  }
+
+  .card__link:hover {
+    border-color: rgba(212,175,55,0.55);
+  }
+
+  .card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .card__title {
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+  }
+
+  .card__sig {
+    color: rgba(220,214,198,0.6);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card__desc {
+    margin-top: 0.5rem;
+    color: rgba(220,214,198,0.72);
+  }
+
+  .card__meta {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: rgba(220,214,198,0.6);
+  }
+
+  .unsorted {
+    margin-top: 2rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(176,141,85,0.25);
+    margin-bottom: 0.5rem;
+  }
+
+  .unsorted-label {
+    font-size: 0.85rem;
+    color: rgba(220,214,198,0.6);
+    font-style: italic;
+  }
+
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card__link {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { DOMAIN_ORDER } from "../../config/domains";
+
+/* Load all volumes */
+const volumes = await getCollection("library");
+
+/* Build domain → volumes map (semantic gravity) */
+const domainMap = new Map();
+
+/* Initialize known domains in fixed order */
+for (const domain of DOMAIN_ORDER) {
+  domainMap.set(domain, []);
+}
+
+/* Assign volumes to domains (allowing duplication) */
+for (const v of volumes) {
+  const domains = v.data.domains ?? [];
+  for (const d of domains) {
+    if (!domainMap.has(d)) {
+      domainMap.set(d, []);
+    }
+    domainMap.get(d).push(v);
+  }
+}
+
+/* Helper: extract numeric volume for fallback ordering */
+function volumeNumber(v) {
+  const match = v.data.volume?.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 999;
+}
+
+/* Order entries inside each domain */
+for (const [domain, list] of domainMap.entries()) {
+  list.sort((a, b) => {
+    if (a.data.index_rank != null && b.data.index_rank != null) {
+      return a.data.index_rank - b.data.index_rank;
+    }
+    if (a.data.index_rank != null) return -1;
+    if (b.data.index_rank != null) return 1;
+    return volumeNumber(a) - volumeNumber(b);
+  });
+}
+---
+
+<Layout
+  title="Index — The Archives of Bub"
+  description="Holdings arranged as found."
+  canonicalPath="/index"
+>
+  <!-- Section I — Index Header -->
+  <section class="index-head">
+    <h1>Index</h1>
+    <p class="index-sub">Holdings arranged as found.</p>
+  </section>
+
+  <!-- Section II — Domain Ledger -->
+  <section class="domain-ledger" aria-label="Domains">
+    <ul>
+      {DOMAIN_ORDER.map((domain) => (
+        <li>
+          <a href={`#${domain.replace(/\s+/g, "-").toLowerCase()}`}>
+            {domain}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Section III — Volume Records by Domain -->
+  <section class="index-records" aria-label="Index records">
+    {[...domainMap.entries()].map(([domain, list]) => (
+      list.length ? (
+        <section
+          id={domain.replace(/\s+/g, "-").toLowerCase()}
+          class="domain-section"
+        >
+          <h2>{domain}</h2>
+
+          <ol class="ledger">
+            {list.map((v) => (
+              <li class="ledger-entry">
+                <div class="ledger-title">
+                  <a href={`/library/${v.slug}/`}>
+                    {v.data.title} — {v.data.volume}
+                  </a>
+                </div>
+
+                {v.data.subtitle ? (
+                  <div class="ledger-sub">
+                    {v.data.subtitle}
+                  </div>
+                ) : null}
+
+                {v.data.filed_under ? (
+                  <div class="ledger-filed">
+                    Filed under: {v.data.filed_under}
+                  </div>
+                ) : null}
+
+                {v.data.see_also?.length ? (
+                  <div class="ledger-related">
+                    See also:{" "}
+                    {v.data.see_also.map((slug, i) => {
+                      const target = volumes.find(x => x.slug === slug);
+                      return target ? (
+                        <>
+                          <a href={`/library/${slug}/`}>
+                            {target.data.title}
+                          </a>
+                          {i < v.data.see_also.length - 1 ? ", " : ""}
+                        </>
+                      ) : (
+                        <span class="uncataloged">
+                          Relevant material has not been cataloged.
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null
+    ))}
+  </section>
+
+  <!-- Section IV — Quiet Cross-reference -->
+  <section class="index-footnote">
+    <p>
+      Certain holdings appear in multiple classifications.
+    </p>
+  </section>
+</Layout>
+<style>
+  .domain-ledger {
+    margin-bottom: 1em;
+  }
+</style>

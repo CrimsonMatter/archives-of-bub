@@ -1,0 +1,194 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection, getEntryBySlug, type CollectionEntry } from "astro:content";
+
+type LibraryEntry = CollectionEntry<"library">;
+
+export async function getStaticPaths() {
+  const all = await getCollection("library");
+  return all.map((entry) => ({
+    params: { slug: entry.slug },
+  }));
+}
+
+/**
+ * Route is [...slug], but our links are /library/<slug>/.
+ * If Astro provides an array, take the last segment.
+ */
+const slugParam = Astro.params.slug;
+const slug = Array.isArray(slugParam) ? slugParam[slugParam.length - 1] : slugParam;
+
+if (!slug) {
+  throw new Response(null, { status: 404 });
+}
+
+const entry = (await getEntryBySlug("library", slug)) as LibraryEntry | undefined;
+
+if (!entry) {
+  throw new Response(null, { status: 404 });
+}
+
+const { Content } = await entry.render();
+
+/* Resolve “see also” with dangling-reference behavior */
+const all = await getCollection("library");
+const bySlug = new Map<string, LibraryEntry>(all.map((x) => [x.slug, x]));
+const seeAlso: string[] = entry.data.see_also ?? [];
+
+/* SEO description: prefer subtitle, then fallback */
+const seoDescription =
+  entry.data.subtitle ??
+  "A volume attributed to Bub. The holdings begin where they please.";
+---
+
+<Layout
+  title={`${entry.data.title} — Library — The Archives of Bub`}
+  description={seoDescription}
+  canonicalPath={`/library/${entry.slug}/`}
+>
+  <article class="volume" aria-label={`${entry.data.title} (${entry.data.volume})`}>
+    <header class="catalog-card">
+      <p class="attribution">
+        {entry.data.attribution ?? "Attributed to Bub"}
+      </p>
+
+      <h1 class="title">{entry.data.title}</h1>
+
+      {entry.data.subtitle ? (
+        <p class="subtitle">{entry.data.subtitle}</p>
+      ) : null}
+
+      {entry.data.filed_under ? (
+        <p class="filed-under">
+          <span class="label">Filed under:</span> {entry.data.filed_under}
+        </p>
+      ) : null}
+    </header>
+
+    <div class="rule" aria-hidden="true"></div>
+
+    <section class="content" aria-label="Volume text">
+      <Content />
+    </section>
+
+    {seeAlso.length ? (
+      <aside class="seealso" aria-label="See also">
+        <h2>See also</h2>
+        <ul>
+          {seeAlso.map((s) => {
+            const target = bySlug.get(s);
+            return target ? (
+              <li>
+                <a href={`/library/${s}/`}>{target.data.title}</a>
+              </li>
+            ) : (
+              <li>
+                <span class="uncataloged">Relevant material has not been cataloged.</span>
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
+    ) : null}
+  </article>
+</Layout>
+
+<style>
+  .volume {
+    max-width: 72ch;
+    margin: 0 auto;
+  }
+
+  .catalog-card {
+    margin-top: 0.5rem;
+  }
+
+  .attribution {
+    display: inline-block;
+    margin: 0 0 0.75rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(176,141,85,0.25);
+    border-radius: 999px;
+    background: rgba(15,14,13,0.28);
+    color: rgba(220,214,198,0.72);
+    font-size: 0.9rem;
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.6rem;
+    letter-spacing: 0.01em;
+  }
+
+  .subtitle {
+    margin: 0.35rem 0 0.85rem;
+    color: rgba(220,214,198,0.78);
+  }
+
+  .filed-under {
+    margin: 0;
+    color: rgba(220,214,198,0.6);
+    font-size: 0.9rem;
+  }
+
+  .label {
+    color: rgba(220,214,198,0.55);
+    font-style: italic;
+  }
+
+  .rule {
+    margin: 1.25rem 0 1.5rem;
+    border-top: 1px solid rgba(176,141,85,0.25);
+  }
+
+  .content :global(p) {
+    margin: 0 0 1rem;
+    line-height: 1.65;
+    color: rgba(220,214,198,0.82);
+  }
+
+  .seealso {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(176,141,85,0.2);
+  }
+
+  .seealso h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: rgba(220,214,198,0.72);
+  }
+
+  .seealso ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .seealso li {
+    margin: 0 0 0.35rem;
+  }
+
+  .seealso a {
+    text-decoration: none;
+    color: rgba(212,175,55,0.9);
+  }
+
+  .seealso a:hover {
+    text-decoration: underline;
+  }
+
+  .uncataloged {
+    color: rgba(220,214,198,0.5);
+    font-style: italic;
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .volume {
+      max-width: 62ch;
+      padding: 0 0.75rem;
+    }
+  }
+</style>

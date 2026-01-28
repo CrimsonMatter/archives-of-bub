@@ -1,0 +1,219 @@
+---
+const {
+  title = "The Archives of Bub",
+  description = "Holdings attributed to Bub.",
+  canonicalPath,
+} = Astro.props;
+
+const site = Astro.site;
+const canonicalUrl =
+  canonicalPath && site ? new URL(canonicalPath, site).toString() : null;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    {canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
+
+    <meta property="og:title" content={title} />
+    {description ? <meta property="og:description" content={description} /> : null}
+    <meta property="og:type" content="article" />
+    {canonicalUrl ? <meta property="og:url" content={canonicalUrl} /> : null}
+    {site ? <meta property="og:image" content={new URL("/og.png", site).toString()} /> : null}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    {site ? <meta name="twitter:image" content={new URL("/og.png", site).toString()} /> : null}
+
+    <meta name="author" content="Bub" />
+
+    <link rel="icon" href="/assets/bubpp.png" />
+  </head>
+
+  <body>
+    <div class="frame">
+      <header class="mast">
+        <a class="mast__mark" href="/" aria-label="Vestibule">
+          <img src="/assets/bubpp.png" alt="" width="56" height="56" />
+        </a>
+
+        <div class="mast__text">
+          <div class="mast__title">The Archives of Bub</div>
+          <div class="mast__subtitle">Holdings arranged as found.</div>
+        </div>
+
+        <nav class="mast__nav" aria-label="Primary">
+          <a class="navlink" href="/">Vestibule</a>
+          <a class="navlink" href="/library">Library</a>
+          <a class="navlink" href="/index">Index</a>
+        </nav>
+      </header>
+
+      <main class="room">
+        <slot />
+      </main>
+
+      <footer class="foot" aria-label="Site footer">
+        <div class="foot__rule"></div>
+        <div class="foot__small">
+          <span>Quiet hours are observed.</span>
+          <span>Cats are acknowledged.</span>
+
+          <a class="colophon" href="/colophon/crimson-matter/" aria-label="Crimson Matter colophon">
+            <img
+              src="/cmlogo1.png"
+              alt="Crimson Matter mark"
+              width="16"
+              height="16"
+              loading="lazy"
+              decoding="async"
+            />
+            <span>Cataloged and bound by Crimson Matter.</span>
+          </a>
+
+          <a
+            class="external-attrib"
+            href="https://www.facebook.com/BubSaysOfficial/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Bub Says on Facebook (opens in a new tab)"
+          >
+            <img
+              src="/bublogosil.png"
+              alt="Bub mark"
+              width="16"
+              height="16"
+              loading="lazy"
+              decoding="async"
+            />
+            <span>Additional remarks attributed to Bub have been observed externally.</span>
+          </a>
+
+        </div>
+      </footer>
+    </div>
+  </body>
+
+  <style is:global>
+    @import "/src/styles/global.css";
+  </style>
+
+  <style>
+    .frame {
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at 40% 20%, rgba(220,214,198,0.08), transparent 55%),
+        radial-gradient(circle at 70% 75%, rgba(176,141,85,0.06), transparent 60%),
+        linear-gradient(180deg, rgba(15,14,13,1), rgba(26,24,22,1));
+      color: rgba(220,214,198,0.92);
+    }
+
+    .mast {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1.25rem 1.25rem 0.75rem;
+      border-bottom: 1px solid rgba(176,141,85,0.25);
+    }
+
+    .mast__mark img {
+      border-radius: 999px;
+      border: 1px solid rgba(176,141,85,0.5);
+      filter: saturate(0.95) contrast(1.05);
+    }
+
+    .mast__title {
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+    }
+
+    .mast__subtitle {
+      font-size: 0.9rem;
+      color: rgba(220,214,198,0.7);
+    }
+
+    .mast__nav {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .navlink {
+      display: inline-block;
+      text-decoration: none;
+      color: rgba(220,214,198,0.85);
+      border: 1px solid rgba(176,141,85,0.25);
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15,14,13,0.35);
+    }
+    .navlink:hover { border-color: rgba(212,175,55,0.55); }
+
+    .room {
+      padding: 2.25rem 1.25rem 3rem;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    
+    .colophon {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      color: rgba(220,214,198,0.65);
+    }
+    
+    .colophon img {
+      opacity: 0.62;
+    }
+
+    .colophon:focus-visible {
+      outline: 2px solid rgba(212,175,55,0.55);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    .external-attrib {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      color: rgba(220,214,198,0.6);
+    }
+
+    .external-attrib img {
+      opacity: 0.55;
+    }
+
+    .external-attrib:hover {
+      text-decoration: underline;
+      text-decoration-color: rgba(220,214,198,0.35);
+    }
+
+    .external-attrib:focus-visible {
+      outline: 2px solid rgba(212,175,55,0.45);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    .foot {
+      padding: 0 1.25rem 1.5rem;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .foot__rule { height: 1px; background: rgba(176,141,85,0.25); margin: 0.75rem 0; }
+    .foot__small {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: rgba(220,214,198,0.65);
+    }
+  </style>
+</html>

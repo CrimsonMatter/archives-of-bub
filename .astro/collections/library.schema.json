@@ -1,0 +1,65 @@
+{
+  "$ref": "#/definitions/library",
+  "definitions": {
+    "library": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "volume": {
+          "type": "string"
+        },
+        "attribution": {
+          "type": "string",
+          "default": "Attributed to Bub"
+        },
+        "primary_domain": {
+          "type": "string"
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filed_under": {
+          "type": "string"
+        },
+        "see_also": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "cataloged",
+            "forthcoming",
+            "restricted"
+          ]
+        },
+        "index_rank": {
+          "type": "integer"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "subtitle",
+        "volume",
+        "primary_domain",
+        "domains"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

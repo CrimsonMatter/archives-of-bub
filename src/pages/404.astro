@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Uncataloged — The Archives of Bub" description="No holdings at this address.">
+  <section class="lost">
+    <h1>Uncataloged</h1>
+    <p>
+      No holdings are recorded under this designation.
+    </p>
+    <p class="small">
+      The shelves remain indifferent.
+    </p>
+    <a class="back" href="/library">Return to the Library</a>
+  </section>
+</Layout>
+
+<style>
+  .lost { max-width: 60ch; }
+  .small { color: rgba(220,214,198,0.65); font-style: italic; }
+  .back {
+    display: inline-block;
+    margin-top: 1.25rem;
+    text-decoration: none;
+    color: rgba(220,214,198,0.9);
+    border: 1px solid rgba(176,141,85,0.35);
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(15,14,13,0.35);
+  }
+  .back:hover { border-color: rgba(212,175,55,0.6); }
+</style>

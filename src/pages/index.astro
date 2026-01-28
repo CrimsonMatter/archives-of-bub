@@ -1,0 +1,102 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Vestibule — The Archives of Bub"
+  description="An entry hall. A quiet lamp. A great deal of certainty."
+  canonicalPath="/"
+>
+
+  <section class="vestibule">
+    <div class="plate">
+      <img
+        src="/assets/Library.png"
+        alt="A library interior: warm wood, brass light, dust and shadow."
+        loading="eager"
+        decoding="async"
+      />
+    </div>
+
+    <div class="text">
+      <h1>Vestibule</h1>
+      <p>
+        The holdings begin where they please.
+      </p>
+
+      <p class="aside">
+        The reader is assumed to be competent.
+      </p>
+
+      <div class="actions" aria-label="Open holdings">
+        <a class="seal" href="/library">Enter the Library</a>
+      </div>
+
+      <div class="marginal" aria-hidden="true">
+        <img src="/assets/bubsays.png" alt="" loading="lazy" decoding="async" />
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .vestibule {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .plate {
+    max-width: 640px;
+  }
+
+  .plate img {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(176,141,85,0.25);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    opacity: 0;
+    transform: translateY(-6px);
+    animation: settle 1.6s ease-out forwards;
+  }
+
+  .text h1 { margin: 0 0 0.75rem; }
+  .text p { max-width: 52ch; color: rgba(220,214,198,0.82); }
+
+  .aside { color: rgba(220,214,198,0.65); font-style: italic; }
+
+  .actions { margin-top: 1.25rem; }
+
+  .seal {
+    display: inline-block;
+    text-decoration: none;
+    color: rgba(220,214,198,0.92);
+    border: 1px solid rgba(212,175,55,0.45);
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    background: rgba(15,14,13,0.4);
+  }
+  .seal:hover { border-color: rgba(212,175,55,0.75); }
+
+  .marginal {
+    margin-top: 1.75rem;
+    opacity: 0;
+    animation: settle 1.6s ease-out forwards;
+    animation-delay: 0.35s;
+  }
+  .marginal img { width: min(360px, 100%); opacity: 0.85; }
+
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .vestibule { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plate img, .marginal { animation: none; opacity: 1; transform: none; }
+  }
+</style>
