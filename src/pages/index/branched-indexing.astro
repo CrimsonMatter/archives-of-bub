@@ -1,0 +1,186 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const description =
+  "Index branch alignment exercise. Certain remarks resolve only under proper rotation. The reader is assumed competent.";
+---
+
+<Layout
+  title="Branched Indexing — The Archives of Bub"
+  description={description}
+  canonicalPath="/index/branched-indexing/"
+>
+  <section class="decipher-page" aria-labelledby="branched-indexing-title">
+    <h1 id="branched-indexing-title">Branched Indexing</h1>
+    <p class="decipher-intro">
+      Certain records remain legible only after branch rotation.
+    </p>
+
+    <button
+      id="reindex-trigger"
+      class="cipher-button"
+      type="button"
+      aria-label="Advance indexing key"
+    >
+      Apply Alternate Branch
+    </button>
+
+    <p id="cryptogram-instructions" class="visually-hidden">
+      A substitution record appears below. Enter one letter per slot. Matching
+      symbols update together across the full record.
+    </p>
+
+    <section
+      id="cryptogram"
+      class="cryptogram"
+      role="region"
+      aria-label="Branch alignment record"
+      aria-live="polite"
+      aria-describedby="cryptogram-instructions"
+    >
+      <p class="cryptogram__placeholder">
+        Awaiting branch selection.
+      </p>
+    </section>
+
+    <noscript>
+      <p class="noscript-note">
+        Certain classification adjustments require active observation.
+        JavaScript appears to be absent.
+      </p>
+    </noscript>
+  </section>
+</Layout>
+
+<script src="/scripts/branched-indexing.js" defer></script>
+
+<style>
+  .decipher-page {
+    max-width: 72ch;
+  }
+
+  .decipher-intro {
+    color: rgba(220, 214, 198, 0.75);
+    margin-bottom: 0.8rem;
+  }
+
+  .cipher-button {
+    display: inline-block;
+    text-decoration: none;
+    color: rgba(220, 214, 198, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    background: rgba(15, 14, 13, 0.4);
+    cursor: pointer;
+    margin-top: 0.35rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .cipher-button:hover {
+    border-color: rgba(212, 175, 55, 0.7);
+  }
+
+  .cipher-button:focus-visible {
+    outline: 2px solid rgba(212, 175, 55, 0.75);
+    outline-offset: 2px;
+  }
+
+  .cryptogram {
+    margin-top: 0.2rem;
+    padding: 1rem;
+    border: 1px solid rgba(176, 141, 85, 0.25);
+    border-radius: 12px;
+    background: rgba(15, 14, 13, 0.3);
+    color: rgba(220, 214, 198, 0.88);
+    height: 13rem;
+    overflow: auto;
+    font-family: "Courier Prime", "Courier New", monospace;
+    line-height: 1.2;
+    --cell-width: 1.05rem;
+    --cell-gap: 0.2rem;
+  }
+
+  :global(.cryptogram__line) {
+    margin-bottom: 0.62rem;
+  }
+
+  :global(.cryptogram__cipher-row),
+  :global(.cryptogram__answer-row) {
+    display: flex;
+    gap: var(--cell-gap);
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  :global(.cryptogram__answer-row) {
+    margin-top: 0.08rem;
+  }
+
+  :global(.cryptogram__cell) {
+    width: var(--cell-width);
+    min-width: var(--cell-width);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  :global(.cryptogram__cipher-char) {
+    width: var(--cell-width);
+    text-align: center;
+    font-weight: 600;
+  }
+
+  :global(.cryptogram__guess) {
+    all: unset;
+    width: var(--cell-width);
+    height: 1.2rem;
+    border-bottom: 1px dashed rgba(220, 214, 198, 0.52);
+    color: rgba(220, 214, 198, 0.9);
+    font-family: "Courier Prime", "Courier New", monospace;
+    font-size: 0.95rem;
+    text-align: center;
+    text-transform: uppercase;
+    box-sizing: border-box;
+  }
+
+  :global(.cryptogram__guess:focus-visible) {
+    outline: none;
+    border-bottom-color: rgba(212, 175, 55, 0.85);
+    box-shadow: inset 0 -1px 0 rgba(212, 175, 55, 0.8);
+  }
+
+  :global(.cryptogram__fixed) {
+    width: var(--cell-width);
+    height: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(220, 214, 198, 0.68);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+
+  .cryptogram__placeholder {
+    margin: 0;
+    color: rgba(220, 214, 198, 0.62);
+  }
+
+  .noscript-note {
+    margin-top: 0.8rem;
+    font-size: 0.92rem;
+    color: rgba(220, 214, 198, 0.7);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

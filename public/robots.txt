@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://archives-of-bub.pages.dev/sitemap-index.xml
+Sitemap: /sitemap-index.xml

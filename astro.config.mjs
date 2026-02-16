@@ -4,7 +4,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://archives-of-bub.pages.dev",
+  site: process.env.SITE_URL || "https://archives-of-bub.pages.dev",
   integrations: [
     tailwind(),
     mdx(),
