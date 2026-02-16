@@ -27,6 +27,8 @@ const canonicalUrl =
     {site ? <meta property="og:image" content={new URL("/og.png", site).toString()} /> : null}
 
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description ? <meta name="twitter:description" content={description} /> : null}
     {site ? <meta name="twitter:image" content={new URL("/og.png", site).toString()} /> : null}
 
     <meta name="author" content="Bub" />

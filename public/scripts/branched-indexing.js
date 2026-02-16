@@ -1,23 +1,11 @@
 (() => {
-  const QUOTES = [
-    "Of course science is complicated; that will not stop me from explaining it.",
-    "Of course the Earth is round; otherwise all the felines would have knocked us all off the edge.",
-    "Of course particles behave differently when observed - they do not like being watched.",
-    "Of course we are in a simulation; the laws of physics read like terms and conditions.",
-    "Of course light speed is the limit; you think heavy speed is going faster?",
-    "Of course we cannot visit other branches of the multiverse; we can barely make it to the moon.",
-    "Of course we have not heard from aliens; they have not bothered to contact us yet.",
-    "Of course quantum entanglement is real. Some particles just cannot move on.",
-    "Of course clocks run slower in gravity; the hour hands are lighter when they are out of it.",
-    "Of course the galaxy looks empty; I would hide too if humans were searching for me.",
-    "Of course every quantum event splits reality; how else could the multiverse exist?",
-    "Of course the particle takes every available path; we all optimize for plausible deniability.",
-    "Of course free will survives physics; it just operates under supervision.",
-    "Of course nothing observed is unaffected by the observer; that is why no one can agree on anything.",
-    "Distance means nothing to particles. It is not romantic. That is entanglement."
-  ];
-
   const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const REINDEX_DEBOUNCE_MS = 400;
+  const PLAIN_ARCHIVAL_NOTE =
+    "CERTAIN CLASSIFICATION ADJUSTMENTS RESOLVE ONLY UNDER PROPER ROTATION. THE READER IS ASSUMED COMPETENT.";
+
+  let renderInProgress = false;
+  let lastReindexAt = 0;
 
   function shuffledAlphabet() {
     const chars = ALPHABET.split("");
@@ -57,10 +45,6 @@
     return output;
   }
 
-  function randomQuote() {
-    return QUOTES[Math.floor(Math.random() * QUOTES.length)];
-  }
-
   function isAlpha(ch) {
     return ch >= "A" && ch <= "Z";
   }
@@ -95,7 +79,10 @@
     const padLeft = cssLengthToPx(style.paddingLeft);
     const padRight = cssLengthToPx(style.paddingRight);
     const innerWidth = Math.max(220, target.clientWidth - padLeft - padRight);
-    const maxColumns = Math.max(18, Math.floor((innerWidth + gapPx) / (cellPx + gapPx)));
+    const maxColumns = Math.max(
+      18,
+      Math.floor((innerWidth + gapPx) / (cellPx + gapPx))
+    );
 
     function buildLines(rawWords, maxCols) {
       const lines = [];
@@ -277,10 +264,25 @@
   const button = document.getElementById("reindex-trigger");
   const cryptogram = document.getElementById("cryptogram");
 
+  function renderNewBranch() {
+    if (!cryptogram || renderInProgress) return;
+    renderInProgress = true;
+
+    try {
+      const substitutionMap = randomSubstitution();
+      const cipherText = encipher(PLAIN_ARCHIVAL_NOTE, substitutionMap);
+      renderCryptogramBoard(cryptogram, cipherText);
+    } finally {
+      renderInProgress = false;
+    }
+  }
+
   if (button && cryptogram) {
     button.addEventListener("click", () => {
-      const substitutionMap = randomSubstitution();
-      renderCryptogramBoard(cryptogram, encipher(randomQuote(), substitutionMap));
+      const now = Date.now();
+      if (now - lastReindexAt < REINDEX_DEBOUNCE_MS || renderInProgress) return;
+      lastReindexAt = now;
+      renderNewBranch();
     });
   }
 })();
