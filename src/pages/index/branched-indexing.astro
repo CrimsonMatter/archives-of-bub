@@ -42,6 +42,12 @@ const description =
         Awaiting branch selection.
       </p>
     </section>
+    <p
+      id="alignment-confirmation"
+      class="alignment-note"
+      role="status"
+      aria-live="polite"
+    ></p>
 
     <noscript>
       <p class="noscript-note">
@@ -164,6 +170,21 @@ const description =
   .cryptogram__placeholder {
     margin: 0;
     color: rgba(220, 214, 198, 0.62);
+  }
+
+  .alignment-note {
+    margin-top: 0.55rem;
+    min-height: 1.25rem;
+    color: rgba(220, 214, 198, 0.66);
+    font-family: "EB Garamond", "Crimson Text", serif;
+    font-size: 1.02rem;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transition: opacity 260ms ease;
+  }
+
+  .alignment-note.is-visible {
+    opacity: 1;
   }
 
   .noscript-note {
