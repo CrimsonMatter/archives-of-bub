@@ -45,7 +45,7 @@
     "Of COURSE the particle takes every available path; we ALL optimize for plausible deniability.",
     "Of COURSE parallel worlds don’t collide; NOBODY wants merge conflicts with a reality such as ours!",
     "Of COURSE Free will survives Physics; it just operates under Supervision.",
-    "Of COURSE the ship of Theseus is a dimple question; Replace ANYTHING long enough, and it becomes MANAGEMENT.",
+    "Of COURSE the ship of Theseus is a simple question; Replace ANYTHING long enough, and it becomes MANAGEMENT.",
     "Yes, the Multiverse likely exists; It’s the only explanation for this… one.",
     "Of COURSE nothing observed is unaffected by the observer; that’s why no one can agree on anything.",
     "Of COURSE time slows at high speeds; the universe charges EXTRA for expedited shipping.",
@@ -112,6 +112,17 @@
 
   function randomQuote() {
     return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  }
+
+  function normalizeQuote(text) {
+    return text
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[‘’]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[—–]/g, "-")
+      .replace(/…/g, "...")
+      .replace(/\u00A0/g, " ");
   }
 
   function isAlpha(ch) {
@@ -379,7 +390,7 @@
     renderInProgress = true;
 
     try {
-      const plainText = randomQuote();
+      const plainText = normalizeQuote(randomQuote());
       const substitutionMap = randomSubstitution();
       const cipherText = encipher(plainText, substitutionMap);
       renderCryptogramBoard(cryptogram, cipherText, plainText, setAlignmentAcknowledgment);
